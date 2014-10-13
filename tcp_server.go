@@ -1,4 +1,3 @@
-// Bootstrap package to build tcp servers
 package tcp_server
 
 import (
