@@ -2,7 +2,7 @@ Package TcpServer created to help build simple tcp servers faster.
 
 Here's an example:
 
-```
+``` go
 package sample
 
 import (
