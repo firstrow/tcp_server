@@ -16,7 +16,7 @@ func main() {
 		// new client connected
 	})
 	server.OnNewMessage(func(c *tcp_server.Client, message string) {
-		// new messaged from client
+		// new message received
 	})
 	server.OnClientConnectionClosed(func(c *tcp_server.Client, err error) {
 		// connection with client lost
