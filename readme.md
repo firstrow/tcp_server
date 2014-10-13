@@ -1,4 +1,4 @@
-Package TcpServer created to help build simple tcp servers faster.
+Package TCPServer created to help build simple tcp servers faster.
 
 Here's an example:
 
