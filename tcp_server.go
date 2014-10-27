@@ -77,10 +77,10 @@ func (s *server) Listen() {
 	go s.listenChannels()
 
 	listener, err := net.Listen("tcp", s.address)
-	defer listener.Close()
 	if err != nil {
 		log.Fatal("Error starting TCP server.")
 	}
+	defer listener.Close()
 
 	for {
 		conn, _ := listener.Accept()
