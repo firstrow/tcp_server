@@ -23,7 +23,7 @@ func main() {
 		// connection with client lost
 	})
 
-	go server.Listen()
+	server.Listen()
 }
 ```
 
