@@ -6,9 +6,7 @@ Here's an example:
 ``` go
 package sample
 
-import (
-	"github.com/firstrow/tcp_server"
-)
+import "github.com/firstrow/tcp_server"
 
 func main() {
 	server := tcp_server.New("localhost:9999")
