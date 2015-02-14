@@ -37,6 +37,11 @@ func (c *Client) listen() {
 	}
 }
 
+func (c *Client) Send(message string) error {
+	_, err := c.conn.Write([]byte(message))
+	return err
+}
+
 // Called right after server starts listening new client
 func (s *server) OnNewClient(callback func(c *Client)) {
 	s.onNewClientCallback = callback
