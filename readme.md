@@ -13,6 +13,8 @@ func main() {
 
 	server.OnNewClient(func(c *tcp_server.Client) {
 		// new client connected
+		// lets send some message
+		c.Send("Hello")
 	})
 	server.OnNewMessage(func(c *tcp_server.Client, message string) {
 		// new message received
