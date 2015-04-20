@@ -32,7 +32,7 @@ func Test_accepting_new_client_callback(t *testing.T) {
 	go server.Listen()
 
 	// Wait for server
-	// If test fails - increase this values
+	// If test fails - increase this value
 	time.Sleep(10 * time.Millisecond)
 
 	conn, err := net.Dial("tcp", "localhost:9999")
