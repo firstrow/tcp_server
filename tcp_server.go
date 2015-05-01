@@ -95,7 +95,7 @@ func (s *server) Listen() {
 
 // Creates new tcp server instance
 func New(address string) *server {
-	log.Print("Creating server with address " + address)
+	log.Println("Creating server with address " + address)
 	server := &server{
 		address: address,
 		joins:   make(chan net.Conn),
