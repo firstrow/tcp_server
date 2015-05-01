@@ -1,5 +1,5 @@
 # TCPServer
-Package TCPServer created to help build simple tcp servers faster.
+Package tcp_server created to help build TCP servers faster.
 
 Here's an example:
 
