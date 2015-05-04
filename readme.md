@@ -1,10 +1,16 @@
 # TCPServer
 Package tcp_server created to help build TCP servers faster.
 
-Here's an example:
+### Install package
+
+``` bash
+> go get github.com/firstrow/tcp_server
+```
+
+### Usage:
 
 ``` go
-package sample
+package main
 
 import "github.com/firstrow/tcp_server"
 
