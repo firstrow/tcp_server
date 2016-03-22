@@ -42,6 +42,10 @@ func (c *Client) Send(message string) error {
 	return err
 }
 
+func (c *Client) Close() error {
+	return c.conn.Close()
+}
+
 // Called right after server starts listening new client
 func (s *server) OnNewClient(callback func(c *Client)) {
 	s.onNewClientCallback = callback
