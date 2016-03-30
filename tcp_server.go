@@ -10,7 +10,6 @@ import (
 type Client struct {
 	conn     net.Conn
 	Server   *server
-	incoming chan string // Channel for incoming data from client
 }
 
 // TCP server
