@@ -37,8 +37,15 @@ func (c *Client) listen() {
 	}
 }
 
+// Send text message to client
 func (c *Client) Send(message string) error {
 	_, err := c.conn.Write([]byte(message))
+	return err
+}
+
+// Send bytes to client
+func (c *Client) SendBytes(b []byte) error {
+	_, err := c.conn.Write(b)
 	return err
 }
 
