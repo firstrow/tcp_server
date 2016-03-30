@@ -16,8 +16,7 @@ type Client struct {
 // TCP server
 type server struct {
 	clients                  []*Client
-	address                  string        // Address to open connection: localhost:9999
-	joins                    chan net.Conn // Channel for new connections
+	address                  string // Address to open connection: localhost:9999
 	onNewClientCallback      func(c *Client)
 	onClientConnectionClosed func(c *Client, err error)
 	onNewMessage             func(c *Client, message string)
@@ -68,30 +67,8 @@ func (s *server) OnNewMessage(callback func(c *Client, message string)) {
 	s.onNewMessage = callback
 }
 
-// Creates new Client instance and starts listening
-func (s *server) newClient(conn net.Conn) {
-	client := &Client{
-		conn:   conn,
-		Server: s,
-	}
-	go client.listen()
-	s.onNewClientCallback(client)
-}
-
-// Listens new connections channel and creating new client
-func (s *server) listenChannels() {
-	for {
-		select {
-		case conn := <-s.joins:
-			s.newClient(conn)
-		}
-	}
-}
-
 // Start network server
 func (s *server) Listen() {
-	go s.listenChannels()
-
 	listener, err := net.Listen("tcp", s.address)
 	if err != nil {
 		log.Fatal("Error starting TCP server.")
@@ -100,7 +77,12 @@ func (s *server) Listen() {
 
 	for {
 		conn, _ := listener.Accept()
-		s.joins <- conn
+		client := &Client{
+			conn:   conn,
+			Server: s,
+		}
+		go client.listen()
+		s.onNewClientCallback(client)
 	}
 }
 
@@ -109,7 +91,6 @@ func New(address string) *server {
 	log.Println("Creating server with address", address)
 	server := &server{
 		address: address,
-		joins:   make(chan net.Conn),
 	}
 
 	server.OnNewClient(func(c *Client) {})
