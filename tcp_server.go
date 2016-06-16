@@ -8,8 +8,8 @@ import (
 
 // Client holds info about connection
 type Client struct {
-	conn     net.Conn
-	Server   *server
+	conn   net.Conn
+	Server *server
 }
 
 // TCP server
@@ -45,6 +45,10 @@ func (c *Client) Send(message string) error {
 func (c *Client) SendBytes(b []byte) error {
 	_, err := c.conn.Write(b)
 	return err
+}
+
+func (c *Client) Conn() net.Conn {
+	return c.conn
 }
 
 func (c *Client) Close() error {
