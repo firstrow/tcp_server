@@ -15,23 +15,27 @@ NOTICE: `OnNewMessage` callback will receive new message only if it's ending wit
 package main
 
 import "github.com/firstrow/tcp_server"
+import "log"
 
 func main() {
-	server := tcp_server.New("localhost:9999")
-
+	server := tcp_server.New("tcp4", "localhost:9999")
+	server.SetReadBufferSize(64)
 	server.OnNewClient(func(c *tcp_server.Client) {
 		// new client connected
 		// lets send some message
-		c.Send("Hello")
+		c.Send([]byte("Hello"))
 	})
-	server.OnNewMessage(func(c *tcp_server.Client, message string) {
+	server.OnNewMessage(func(c *tcp_server.Client, message []byte) {
 		// new message received
 	})
 	server.OnClientConnectionClosed(func(c *tcp_server.Client, err error) {
 		// connection with client lost
 	})
 
-	server.Listen()
+	err := server.Listen()
+	if err != nil {
+		log.Panicln(err)
+	}
 }
 ```
 
