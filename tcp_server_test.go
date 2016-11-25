@@ -1,14 +1,15 @@
 package tcp_server
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"net"
 	"testing"
 	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func buildTestServer() *server {
-	return New("localhost:9999")
+	return New("tcp4", "localhost:9999")
 }
 
 func Test_accepting_new_client_callback(t *testing.T) {
@@ -22,9 +23,9 @@ func Test_accepting_new_client_callback(t *testing.T) {
 	server.OnNewClient(func(c *Client) {
 		newClient = true
 	})
-	server.OnNewMessage(func(c *Client, message string) {
+	server.OnNewMessage(func(c *Client, message []byte) {
 		messageReceived = true
-		messageText = message
+		messageText = string(message)
 	})
 	server.OnClientConnectionClosed(func(c *Client, err error) {
 		connectinClosed = true
