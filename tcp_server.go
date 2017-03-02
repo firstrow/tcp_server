@@ -25,13 +25,19 @@ type server struct {
 func (c *Client) listen() {
 	reader := bufio.NewReader(c.conn)
 	for {
-		message, err := reader.ReadString('\n')
+		buf := make([]byte, 1024)
+		num, err := reader.Read(buf)
+
 		if err != nil {
 			c.conn.Close()
 			c.Server.onClientConnectionClosed(c, err)
 			return
 		}
-		c.Server.onNewMessage(c, message)
+
+		message := make([]byte, num)
+		copy(message, buf)
+
+		c.Server.onNewMessage(c, string(message))
 	}
 }
 
