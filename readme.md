@@ -9,8 +9,6 @@ Package tcp_server created to help build TCP servers faster.
 
 ### Usage:
 
-NOTICE: `OnNewMessage` callback will receive new message only if it's ending with `\n`
-
 ``` go
 package main
 
