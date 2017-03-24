@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/firstrow/tcp_server.svg?branch=master)](https://travis-ci.org/firstrow/tcp_server)
+
 # TCPServer
 Package tcp_server created to help build TCP servers faster.
 
