@@ -18,19 +18,21 @@ type server struct {
 	onNewClientCallback      func(c *Client)
 	onClientConnectionClosed func(c *Client, err error)
 	onNewMessage             func(c *Client, message string)
+	close                    chan bool
+	MessageTerminator        rune
 }
 
 // Read client data from channel
 func (c *Client) listen() {
 	reader := bufio.NewReader(c.conn)
 	for {
-		message, err := reader.ReadString('\n')
+		message, err := reader.ReadString(byte(c.Server.MessageTerminator))
 		if err != nil {
 			c.conn.Close()
 			c.Server.onClientConnectionClosed(c, err)
 			return
 		}
-		c.Server.onNewMessage(c, message)
+		go c.Server.onNewMessage(c, message)
 	}
 }
 
@@ -77,8 +79,16 @@ func (s *server) Listen() {
 	}
 	defer listener.Close()
 
+	go func() {
+		<-s.close
+		listener.Close()
+	}()
+
 	for {
-		conn, _ := listener.Accept()
+		conn, lErr := listener.Accept()
+		if lErr != nil {
+			return
+		}
 		client := &Client{
 			conn:   conn,
 			Server: s,
@@ -88,11 +98,17 @@ func (s *server) Listen() {
 	}
 }
 
+func (s *server) Close() {
+	s.close <- true
+}
+
 // Creates new tcp server instance
 func New(address string) *server {
 	log.Println("Creating server with address", address)
 	server := &server{
-		address: address,
+		address:           address,
+		close:             make(chan bool, 1),
+		MessageTerminator: '\n',
 	}
 
 	server.OnNewClient(func(c *Client) {})
