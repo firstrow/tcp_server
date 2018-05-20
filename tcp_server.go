@@ -32,7 +32,7 @@ func (c *Client) listen() {
 			c.Server.onClientConnectionClosed(c, err)
 			return
 		}
-		go c.Server.onNewMessage(c, message)
+		c.Server.onNewMessage(c, message)
 	}
 }
 
