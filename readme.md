@@ -34,7 +34,7 @@ func main() {
 ```
 
 ### Examples
-You can check out some example usages in github.com/89apt89/tcpserver/examples. If you have some examples you'd like to share, create a pull request
+You can check out some example usages in [here](github.com/89apt89/tcpserver/examples). If you have some examples you'd like to share, create a pull request
 
 # Contributing
 
