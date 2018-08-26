@@ -35,6 +35,12 @@ func main() {
 }
 ```
 
+### Explanation
+tcpserver.CommunicationData is a struct with 2 values: Type (string) and Data (map[string]string)
+Theoretically these values could be used for anything, but Type is used to identify the type of data in Data, and Data is self explanitory. You can create a list of values in the map and parse through them server-side.
+
+c.Send() will send a CommunicationData struct, so make sure the client has CommunicationData. In the future, I may make a package that complements this one and will abstract the process.
+
 ### Examples
 You can check out some example usages in [here](github.com/89apt89/tcpserver/examples). If you have some examples you'd like to share, create a pull request
 
