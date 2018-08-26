@@ -20,7 +20,7 @@ func main() {
 	server.OnNewClient(func(c *tcpserver.Client) {
 		// new client connected
 		// lets send some message
-		c.Send("Hello")
+		c.Send("chat", map[string]string{}) // must have an empty map even if it isn't used
 	})
 		server.OnNewMessage(func(c *tcpserver.Client, response *tcpserver.CommunicationData) {
 		log.Println(response.Type)
