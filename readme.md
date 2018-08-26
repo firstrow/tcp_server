@@ -15,7 +15,7 @@ package main
 import "github.com/89apt89/tcpserver"
 
 func main() {
-	server := tcp_server.New("localhost:2000")
+	server := tcpserver.New("localhost:2000")
 
 	server.OnNewClient(func(c *tcpserver.Client) {
 		// new client connected
