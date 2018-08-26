@@ -7,7 +7,7 @@ A TCP server implementation using gobs for communication
 go get -u github.com/89apt89/tcpserver
 ```
 
-### Usage:
+### Usage
 
 ``` go
 package main
@@ -15,15 +15,15 @@ package main
 import "github.com/89apt89/tcpserver"
 
 func main() {
-	server := tcp_server.New("localhost:9999")
+	server := tcp_server.New("localhost:2000")
 
 	server.OnNewClient(func(c *tcpserver.Client) {
 		// new client connected
 		// lets send some message
 		c.Send("Hello")
 	})
-	server.OnNewMessage(func(c *tcpserver.Client, response *tcpserver.Data) {
-		// new message received
+		server.OnNewMessage(func(c *tcpserver.Client, response *tcpserver.CommunicationData) {
+		log.Println(response.Type)
 	})
 	server.OnClientConnectionClosed(func(c *tcpserver.Client, err error) {
 		// connection with client lost
@@ -32,6 +32,9 @@ func main() {
 	server.Listen()
 }
 ```
+
+### Examples
+You can check out some example usages in github.com/89apt89/tcpserver/examples. If you have some examples you'd like to share, create a pull request
 
 # Contributing
 
