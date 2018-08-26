@@ -1,6 +1,7 @@
 package tcpserver
 
 import (
+	"encoding/gob"
 	"net"
 	"testing"
 	"time"
@@ -23,9 +24,9 @@ func Test_accepting_new_client_callback(t *testing.T) {
 	server.OnNewClient(func(c *Client) {
 		newClient = true
 	})
-	server.OnNewMessage(func(c *Client, message string) {
+	server.OnNewMessage(func(c *Client, response *CommunicationData) {
 		messageReceived = true
-		messageText = message
+		messageText = response.Type
 	})
 	server.OnClientConnectionClosed(func(c *Client, err error) {
 		connectinClosed = true
@@ -40,14 +41,16 @@ func Test_accepting_new_client_callback(t *testing.T) {
 	if err != nil {
 		t.Fatal("Failed to connect to test server")
 	}
-	conn.Write([]byte("Test message\n"))
+	encoder := gob.NewEncoder(conn)
+	r := &CommunicationData{Type: "ping", Data: map[string]string{}}
+	encoder.Encode(r)
 	conn.Close()
 
 	// Wait for server
 	time.Sleep(10 * time.Millisecond)
 
 	Convey("Messages should be equal", t, func() {
-		So(messageText, ShouldEqual, "Test message\n")
+		So(messageText, ShouldEqual, "ping")
 	})
 	Convey("It should receive new client callback", t, func() {
 		So(newClient, ShouldEqual, true)
