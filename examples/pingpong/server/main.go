@@ -14,7 +14,9 @@ func main() {
 		c.Send("ping")
 	})
 	server.OnNewMessage(func(c *tcpserver.Client, response *tcpserver.CommunicationData) {
-		log.Println(response.Type)
+		if response.Type == "pong" {
+			log.Printf("Client %s: Pong!", c.Conn().RemoteAddr())
+		}
 	})
 	server.OnClientConnectionClosed(func(c *tcpserver.Client, err error) {
 		// connection with client lost
