@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/gob"
+	"fmt"
 	"log"
 	"net"
 	"time"
@@ -19,15 +20,17 @@ func main() {
 		log.Println(err)
 		Restart()
 	}
+	decoder := gob.NewDecoder(conn)
 	for {
-		decoder := gob.NewDecoder(conn)
 		r := &CommunicationData{}
 		err := decoder.Decode(r)
 		if err != nil {
 			log.Println(err)
 			Restart()
 		}
+		log.Println(r.Type)
 		if r.Type == "ping" {
+			fmt.Printf("Ping from %s\n", conn.RemoteAddr())
 			encoder := gob.NewEncoder(conn)
 			r := &CommunicationData{Type: "pong", Data: map[string]string{}}
 			encoder.Encode(r)
