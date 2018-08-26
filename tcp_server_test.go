@@ -1,10 +1,11 @@
-package tcp_server
+package tcpserver
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"net"
 	"testing"
 	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func buildTestServer() *server {

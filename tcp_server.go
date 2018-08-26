@@ -1,10 +1,16 @@
-package tcp_server
+package tcpserver
 
 import (
-	"bufio"
+	"encoding/gob"
 	"log"
 	"net"
 )
+
+// CommunicationData is the data that is transmitted between client and server
+type CommunicationData struct {
+	Type string
+	Data map[string]string
+}
 
 // Client holds info about connection
 type Client struct {
@@ -17,20 +23,21 @@ type server struct {
 	address                  string // Address to open connection: localhost:9999
 	onNewClientCallback      func(c *Client)
 	onClientConnectionClosed func(c *Client, err error)
-	onNewMessage             func(c *Client, message string)
+	onNewMessage             func(c *Client, response *CommunicationData)
 }
 
 // Read client data from channel
 func (c *Client) listen() {
-	reader := bufio.NewReader(c.conn)
+	decoder := gob.NewDecoder(c.conn)
 	for {
-		message, err := reader.ReadString('\n')
+		r := &CommunicationData{}
+		err := decoder.Decode(r)
 		if err != nil {
 			c.conn.Close()
 			c.Server.onClientConnectionClosed(c, err)
 			return
 		}
-		c.Server.onNewMessage(c, message)
+		c.Server.onNewMessage(c, r)
 	}
 }
 
@@ -65,7 +72,7 @@ func (s *server) OnClientConnectionClosed(callback func(c *Client, err error)) {
 }
 
 // Called when Client receives new message
-func (s *server) OnNewMessage(callback func(c *Client, message string)) {
+func (s *server) OnNewMessage(callback func(c *Client, response *CommunicationData)) {
 	s.onNewMessage = callback
 }
 
@@ -96,7 +103,7 @@ func New(address string) *server {
 	}
 
 	server.OnNewClient(func(c *Client) {})
-	server.OnNewMessage(func(c *Client, message string) {})
+	server.OnNewMessage(func(c *Client, response *CommunicationData) {})
 	server.OnClientConnectionClosed(func(c *Client, err error) {})
 
 	return server
