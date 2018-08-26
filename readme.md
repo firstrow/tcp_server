@@ -1,5 +1,7 @@
 # TCPServer
 A TCP server implementation using gobs for communication
+#### Disclaimer
+This package is by no means perfect. I'm a beginner to Go and I wanted to experiment with some ideas. That being said, it should be functional. If anyone finds a bug, please submit an error report. If you've found a fix, create a PR. Thanks =)
 
 ### Install package
 
