@@ -41,17 +41,19 @@ func (c *Client) listen() {
 	}
 }
 
-// Send text message to client
-func (c *Client) Send(message string) error {
-	_, err := c.conn.Write([]byte(message))
+// Send text gob to client
+func (c *Client) Send(message string, data map[string]string) error {
+	encoder := gob.NewEncoder(c.conn)
+	r := &CommunicationData{Type: message, Data: data}
+	err := encoder.Encode(r)
 	return err
 }
 
-// Send bytes to client
-func (c *Client) SendBytes(b []byte) error {
-	_, err := c.conn.Write(b)
-	return err
-}
+// // Send bytes to client
+// func (c *Client) SendBytes(b []byte) error {
+// 	_, err := c.conn.Write(b)
+// 	return err
+// }
 
 func (c *Client) Conn() net.Conn {
 	return c.conn
