@@ -22,7 +22,7 @@ type server struct {
 
 // Read client data from channel
 func (c *Client) listen() {
-        c.Server.onNewClientCallback(c)
+	c.Server.onNewClientCallback(c)
 	reader := bufio.NewReader(c.conn)
 	for {
 		message, err := reader.ReadString('\n')
