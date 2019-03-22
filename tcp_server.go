@@ -2,6 +2,7 @@ package tcp_server
 
 import (
 	"bufio"
+	"crypto/tls"
 	"log"
 	"net"
 )
@@ -15,6 +16,7 @@ type Client struct {
 // TCP server
 type server struct {
 	address                  string // Address to open connection: localhost:9999
+	config                   *tls.Config
 	onNewClientCallback      func(c *Client)
 	onClientConnectionClosed func(c *Client, err error)
 	onNewMessage             func(c *Client, message string)
@@ -72,7 +74,13 @@ func (s *server) OnNewMessage(callback func(c *Client, message string)) {
 
 // Start network server
 func (s *server) Listen() {
-	listener, err := net.Listen("tcp", s.address)
+	var listener net.Listener
+	var err error
+	if s.config == nil {
+		listener, err = net.Listen("tcp", s.address)
+	} else {
+		listener, err = tls.Listen("tcp", s.address, s.config)
+	}
 	if err != nil {
 		log.Fatal("Error starting TCP server.")
 	}
@@ -93,6 +101,25 @@ func New(address string) *server {
 	log.Println("Creating server with address", address)
 	server := &server{
 		address: address,
+		config:  nil,
+	}
+
+	server.OnNewClient(func(c *Client) {})
+	server.OnNewMessage(func(c *Client, message string) {})
+	server.OnClientConnectionClosed(func(c *Client, err error) {})
+
+	return server
+}
+
+func NewWithTLS(address string, certFile string, keyFile string) *server {
+	log.Println("Creating server with address", address)
+	cert, _ := tls.LoadX509KeyPair(certFile, keyFile)
+	config := tls.Config{
+		Certificates: []tls.Certificate{cert},
+	}
+	server := &server{
+		address: address,
+		config:  &config,
 	}
 
 	server.OnNewClient(func(c *Client) {})
