@@ -72,7 +72,7 @@ func (s *server) OnNewMessage(callback func(c *Client, message string)) {
 	s.onNewMessage = callback
 }
 
-// Start network server
+// Listen starts network server
 func (s *server) Listen() {
 	var listener net.Listener
 	var err error
