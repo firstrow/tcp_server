@@ -39,7 +39,10 @@ func Test_accepting_new_client_callback(t *testing.T) {
 	if err != nil {
 		t.Fatal("Failed to connect to test server")
 	}
-	conn.Write([]byte("Test message\n"))
+	_, err = conn.Write([]byte("Test message\n"))
+	if err != nil {
+		t.Fatal("Failed to send test message.")
+	}
 	conn.Close()
 
 	// Wait for server
