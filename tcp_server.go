@@ -115,13 +115,13 @@ func New(address string) *server {
 
 func NewWithTLS(address, certFile, keyFile string) *server {
 	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
-if err != nil {
-log.Fatal("Error loading certificate files. Unable to create TCP server with TLS functionality.\r\n", err)
-}
+	if err != nil {
+		log.Fatal("Error loading certificate files. Unable to create TCP server with TLS functionality.\r\n", err)
+	}
 	config := &tls.Config{
 		Certificates: []tls.Certificate{cert},
 	}
-server := New(address)
-server.config = config
+	server := New(address)
+	server.config = config
 	return server
 }
