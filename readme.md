@@ -6,7 +6,7 @@ Package tcp_server created to help build TCP servers faster.
 ### Install package
 
 ``` bash
-go get -u github.com/firstrow/tcp_server
+go get -u github.com/firstrow/tcp_server@latest
 ```
 
 ### Usage:
