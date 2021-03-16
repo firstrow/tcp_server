@@ -2,31 +2,28 @@ package tcp_server
 
 import (
 	"net"
+	"sync"
 	"testing"
 	"time"
 )
 
-func buildTestServer() *server {
-	return New("localhost:9999")
-}
-
 func Test_accepting_new_client_callback(t *testing.T) {
-	server := buildTestServer()
+	server := New("localhost:9999")
 
-	var messageReceived bool
+	var wg sync.WaitGroup
+	wg.Add(3)
+
 	var messageText string
-	var newClient bool
-	var connectinClosed bool
 
 	server.OnNewClient(func(c *Client) {
-		newClient = true
+		wg.Done()
 	})
 	server.OnNewMessage(func(c *Client, message string) {
-		messageReceived = true
+		wg.Done()
 		messageText = message
 	})
 	server.OnClientConnectionClosed(func(c *Client, err error) {
-		connectinClosed = true
+		wg.Done()
 	})
 	go server.Listen()
 
@@ -44,22 +41,9 @@ func Test_accepting_new_client_callback(t *testing.T) {
 	}
 	conn.Close()
 
-	// Wait for server
-	time.Sleep(10 * time.Millisecond)
+	wg.Wait()
 
 	if messageText != "Test message\n" {
 		t.Error("received wrong message")
-	}
-
-	if newClient != true {
-		t.Error("OnNewClient did not received call")
-	}
-
-	if messageReceived != true {
-		t.Error("the message was not received")
-	}
-
-	if connectinClosed != true {
-		t.Error("connection was not closed")
 	}
 }
