@@ -85,7 +85,7 @@ func (s *server) Listen() {
 		listener, err = tls.Listen("tcp", s.address, s.config)
 	}
 	if err != nil {
-		log.Fatal("Error starting TCP server.")
+		log.Fatal("Error starting TCP server.\r\n", err)
 	}
 	defer listener.Close()
 
@@ -104,7 +104,6 @@ func New(address string) *server {
 	log.Println("Creating server with address", address)
 	server := &server{
 		address: address,
-		config:  nil,
 	}
 
 	server.OnNewClient(func(c *Client) {})
@@ -114,20 +113,15 @@ func New(address string) *server {
 	return server
 }
 
-func NewWithTLS(address string, certFile string, keyFile string) *server {
-	log.Println("Creating server with address", address)
-	cert, _ := tls.LoadX509KeyPair(certFile, keyFile)
-	config := tls.Config{
+func NewWithTLS(address, certFile, keyFile string) *server {
+	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+	if err != nil {
+		log.Fatal("Error loading certificate files. Unable to create TCP server with TLS functionality.\r\n", err)
+	}
+	config := &tls.Config{
 		Certificates: []tls.Certificate{cert},
 	}
-	server := &server{
-		address: address,
-		config:  &config,
-	}
-
-	server.OnNewClient(func(c *Client) {})
-	server.OnNewMessage(func(c *Client, message string) {})
-	server.OnClientConnectionClosed(func(c *Client, err error) {})
-
+	server := New(address)
+	server.config = config
 	return server
 }
