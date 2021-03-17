@@ -20,7 +20,6 @@ type server struct {
 	onNewClientCallback      func(c *Client)
 	onClientConnectionClosed func(c *Client, err error)
 	onNewMessage             func(c *Client, message string)
-	close                    chan bool
 	MessageTerminator        rune
 }
 
@@ -91,16 +90,8 @@ func (s *server) Listen() {
 	}
 	defer listener.Close()
 
-	go func() {
-		<-s.close
-		listener.Close()
-	}()
-
 	for {
-		conn, lErr := listener.Accept()
-		if lErr != nil {
-			return
-		}
+		conn, _ := listener.Accept()
 		client := &Client{
 			conn:   conn,
 			Server: s,
@@ -109,16 +100,11 @@ func (s *server) Listen() {
 	}
 }
 
-func (s *server) Close() {
-	s.close <- true
-}
-
 // Creates new tcp server instance
 func New(address string) *server {
 	log.Println("Creating server with address", address)
 	server := &server{
 		address:           address,
-		close:             make(chan bool, 1),
 		MessageTerminator: '\n',
 	}
 
