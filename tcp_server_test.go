@@ -1,33 +1,29 @@
 package tcp_server
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"net"
+	"sync"
 	"testing"
 	"time"
 )
 
-func buildTestServer() *server {
-	return New("localhost:9999")
-}
-
 func Test_accepting_new_client_callback(t *testing.T) {
-	server := buildTestServer()
+	server := New("localhost:9999")
 
-	var messageReceived bool
+	var wg sync.WaitGroup
+	wg.Add(3)
+
 	var messageText string
-	var newClient bool
-	var connectinClosed bool
 
 	server.OnNewClient(func(c *Client) {
-		newClient = true
+		wg.Done()
 	})
 	server.OnNewMessage(func(c *Client, message string) {
-		messageReceived = true
+		wg.Done()
 		messageText = message
 	})
 	server.OnClientConnectionClosed(func(c *Client, err error) {
-		connectinClosed = true
+		wg.Done()
 	})
 	go server.Listen()
 
@@ -39,48 +35,36 @@ func Test_accepting_new_client_callback(t *testing.T) {
 	if err != nil {
 		t.Fatal("Failed to connect to test server")
 	}
-	conn.Write([]byte("Test message\n"))
-
-	time.Sleep(100 * time.Millisecond)
-
+	_, err = conn.Write([]byte("Test message\n"))
+	if err != nil {
+		t.Fatal("Failed to send test message.")
+	}
 	conn.Close()
 
-	// Wait for server
-	time.Sleep(10 * time.Millisecond)
+	wg.Wait()
 
-	server.Close()
-
-	Convey("Messages should be equal", t, func() {
-		So(messageText, ShouldEqual, "Test message\n")
-	})
-	Convey("It should receive new client callback", t, func() {
-		So(newClient, ShouldEqual, true)
-	})
-	Convey("It should receive message callback", t, func() {
-		So(messageReceived, ShouldEqual, true)
-	})
-	Convey("It should receive connection closed callback", t, func() {
-		So(connectinClosed, ShouldEqual, true)
-	})
+	if messageText != "Test message\n" {
+		t.Error("received wrong message")
+	}
 }
 
 func Test_accepting_new_client_callback_different_terminator(t *testing.T) {
-	server := buildTestServer()
+	server := New("localhost:9998")
 
-	var messageReceived bool
+	var wg sync.WaitGroup
+	wg.Add(3)
+
 	var messageText string
-	var newClient bool
-	var connectinClosed bool
 
 	server.OnNewClient(func(c *Client) {
-		newClient = true
+		wg.Done()
 	})
 	server.OnNewMessage(func(c *Client, message string) {
-		messageReceived = true
+		wg.Done()
 		messageText = message
 	})
 	server.OnClientConnectionClosed(func(c *Client, err error) {
-		connectinClosed = true
+		wg.Done()
 	})
 	server.MessageTerminator = '\u0000'
 	go server.Listen()
@@ -89,31 +73,19 @@ func Test_accepting_new_client_callback_different_terminator(t *testing.T) {
 	// If test fails - increase this value
 	time.Sleep(10 * time.Millisecond)
 
-	conn, err := net.Dial("tcp", "localhost:9999")
+	conn, err := net.Dial("tcp", "localhost:9998")
 	if err != nil {
 		t.Fatal("Failed to connect to test server")
 	}
-	conn.Write([]byte("Test message\u0000"))
-
-	time.Sleep(100 * time.Millisecond)
-
+	_, err = conn.Write([]byte("Test message\u0000"))
+	if err != nil {
+		t.Fatal("Failed to send test message.")
+	}
 	conn.Close()
 
-	// Wait for server
-	time.Sleep(10 * time.Millisecond)
+	wg.Wait()
 
-	server.Close()
-
-	Convey("Messages should be equal", t, func() {
-		So(messageText, ShouldEqual, "Test message\u0000")
-	})
-	Convey("It should receive new client callback", t, func() {
-		So(newClient, ShouldEqual, true)
-	})
-	Convey("It should receive message callback", t, func() {
-		So(messageReceived, ShouldEqual, true)
-	})
-	Convey("It should receive connection closed callback", t, func() {
-		So(connectinClosed, ShouldEqual, true)
-	})
+	if messageText != "Test message\u0000" {
+		t.Error("received wrong message")
+	}
 }

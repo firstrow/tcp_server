@@ -1,5 +1,5 @@
 language: go
 go:
- - 1.7
+ - 1.13
 script:
- - go test -v ./...
+ - go test -v ./... -race
