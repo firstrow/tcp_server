@@ -20,7 +20,7 @@ import "github.com/firstrow/tcp_server"
 
 func main() {
 	server := tcp_server.New("localhost:9999")
-  server.MessageTerminator='\n' // Optional end of message byte, default to newline.
+	server.MessageTerminator='\n' // Optional end of message byte, default to newline.
 
 	server.OnNewClient(func(c *tcp_server.Client) {
 		// new client connected
