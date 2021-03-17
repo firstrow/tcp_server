@@ -66,7 +66,7 @@ func Test_accepting_new_client_callback_different_terminator(t *testing.T) {
 	server.OnClientConnectionClosed(func(c *Client, err error) {
 		wg.Done()
 	})
-	server.MessageTerminator = '\u0000'
+	server.MessageTerminator('\u0000')
 	go server.Listen()
 
 	// Wait for server
