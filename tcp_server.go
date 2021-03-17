@@ -20,7 +20,7 @@ type server struct {
 	onNewClientCallback      func(c *Client)
 	onClientConnectionClosed func(c *Client, err error)
 	onNewMessage             func(c *Client, message string)
-	MessageTerminator        rune
+	MessageTerminator        byte
 }
 
 // Read client data from channel
@@ -28,7 +28,7 @@ func (c *Client) listen() {
 	c.Server.onNewClientCallback(c)
 	reader := bufio.NewReader(c.conn)
 	for {
-		message, err := reader.ReadString(byte(c.Server.MessageTerminator))
+		message, err := reader.ReadString(c.Server.MessageTerminator)
 		if err != nil {
 			c.conn.Close()
 			c.Server.onClientConnectionClosed(c, err)
