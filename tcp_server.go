@@ -20,6 +20,7 @@ type server struct {
 	onNewClientCallback      func(c *Client)
 	onClientConnectionClosed func(c *Client, err error)
 	onNewMessage             func(c *Client, message string)
+	messageTerminator        byte
 }
 
 // Read client data from channel
@@ -27,7 +28,7 @@ func (c *Client) listen() {
 	c.Server.onNewClientCallback(c)
 	reader := bufio.NewReader(c.conn)
 	for {
-		message, err := reader.ReadString('\n')
+		message, err := reader.ReadString(c.Server.messageTerminator)
 		if err != nil {
 			c.conn.Close()
 			c.Server.onClientConnectionClosed(c, err)
@@ -75,6 +76,11 @@ func (s *server) OnNewMessage(callback func(c *Client, message string)) {
 	s.onNewMessage = callback
 }
 
+// Set message terminator
+func (s *server) MessageTerminator(terminator byte) {
+	s.messageTerminator = terminator
+}
+
 // Listen starts network server
 func (s *server) Listen() {
 	var listener net.Listener
@@ -103,7 +109,8 @@ func (s *server) Listen() {
 func New(address string) *server {
 	log.Println("Creating server with address", address)
 	server := &server{
-		address: address,
+		address:           address,
+		messageTerminator: '\n',
 	}
 
 	server.OnNewClient(func(c *Client) {})
