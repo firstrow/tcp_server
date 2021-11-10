@@ -7,6 +7,7 @@ import (
 	"net"
 )
 
+var clientIP net.Addr
 // Client holds info about connection
 type Client struct {
 	conn   net.Conn
@@ -75,6 +76,10 @@ func (s *server) OnNewMessage(callback func(c *Client, message string)) {
 	s.onNewMessage = callback
 }
 
+func (s *server) GetClientIP() (net.Addr) {
+	return clientIP
+}
+
 // Listen starts network server
 func (s *server) Listen() {
 	var listener net.Listener
@@ -95,6 +100,7 @@ func (s *server) Listen() {
 			conn:   conn,
 			Server: s,
 		}
+		clientIP = conn.RemoteAddr()
 		go client.listen()
 	}
 }
